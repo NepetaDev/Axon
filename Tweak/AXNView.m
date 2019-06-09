@@ -166,11 +166,18 @@
                 return (NSComparisonResult)NSOrderedSame;
             }];
             break;
-        default:
+        case 2:
             sortedKeys = [[[AXNManager sharedInstance].notificationRequests allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
                 NSString *first = [[AXNManager sharedInstance].names objectForKey:a];
                 NSString *second = [[AXNManager sharedInstance].names objectForKey:b];
                 return [first compare:second];
+            }];
+            break;
+        default:
+            sortedKeys = [[[AXNManager sharedInstance].notificationRequests allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                NSDate *first = [[AXNManager sharedInstance].timestamps objectForKey:a];
+                NSDate *second = [[AXNManager sharedInstance].timestamps objectForKey:b];
+                return [second compare:first] == NSOrderedDescending;
             }];
     }
 

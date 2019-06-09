@@ -10,6 +10,7 @@
   "COMPACT" = "Compact";
 
   "SORTING" = "Sorting";
+  "BY_DATE" = "Latest";
   "BY_NAME" = "By app name";
   "BY_COUNT" = "By count";
 

@@ -117,14 +117,16 @@
 			<array>
 				<integer>0</integer>
 				<integer>1</integer>
+				<integer>2</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
-				<string>BY_NAME</string>
+				<string>BY_DATE</string>
 				<string>BY_COUNT</string>
+				<string>BY_NAME</string>
 			</array>
 			<key>alignment</key>
-			<string>2</string>
+			<string>3</string>
 			<key>PostNotification</key>
 			<string>me.nepeta.axon/ReloadPrefs</string>
 		</dict>

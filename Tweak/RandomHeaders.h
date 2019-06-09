@@ -25,12 +25,13 @@
 
 @interface NCNotificationRequest : NSObject
 
-@property (nonatomic,readonly) NCNotificationContent * content; 
+@property (nonatomic,readonly) NCNotificationContent * content;
 @property (nonatomic,copy,readonly) NSString * sectionIdentifier;
 @property (nonatomic,copy,readonly) NSString * notificationIdentifier;
 @property (nonatomic,copy,readonly) NSString * threadIdentifier;
 @property (nonatomic,copy,readonly) NSString * categoryIdentifier;
-@property (nonatomic,readonly) BBBulletin * bulletin; 
+@property (nonatomic,readonly) BBBulletin * bulletin;
+@property (nonatomic,readonly) NSDate * timestamp;
 
 @end
 

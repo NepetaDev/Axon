@@ -4,6 +4,7 @@
 
 @property (nonatomic, retain) NSMutableDictionary *notificationRequests;
 @property (nonatomic, retain) NSMutableDictionary *names;
+@property (nonatomic, retain) NSMutableDictionary *timestamps;
 @property (nonatomic, retain) NSMutableDictionary *iconStore;
 @property (nonatomic, retain) NSMutableDictionary *backgroundColorCache;
 @property (nonatomic, retain) NSMutableDictionary *textColorCache;

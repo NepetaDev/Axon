@@ -9,6 +9,7 @@
     dispatch_once(&onceToken, ^{
         sharedInstance = [AXNManager alloc];
         sharedInstance.names = [NSMutableDictionary new];
+        sharedInstance.timestamps = [NSMutableDictionary new];
         sharedInstance.notificationRequests = [NSMutableDictionary new];
         sharedInstance.iconStore = [NSMutableDictionary new];
         sharedInstance.backgroundColorCache = [NSMutableDictionary new];
@@ -67,6 +68,12 @@
 
         if (req.content && req.content.header) {
             self.names[bundleIdentifier] = [req.content.header copy];
+        }
+
+        if (req.timestamp) {
+            if (!self.timestamps[bundleIdentifier] || [req.timestamp compare:self.timestamps[bundleIdentifier]] == NSOrderedDescending) {
+                self.timestamps[bundleIdentifier] = [req.timestamp copy];
+            }
         }
 
         if (self.notificationRequests[bundleIdentifier]) {
