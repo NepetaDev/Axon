@@ -191,6 +191,11 @@
             NSMutableArray *coalescedNotifications = [NSMutableArray new];
             for (NCNotificationRequest *req in [AXNManager sharedInstance].notificationRequests[key]) {
                 NCCoalescedNotification *coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
+                if (!coalesced) {
+                    count++;
+                    continue;
+                }
+                
                 if (![coalescedNotifications containsObject:coalesced]) count += [coalesced.notificationRequests count];
                 [coalescedNotifications addObject:coalesced];
             }
