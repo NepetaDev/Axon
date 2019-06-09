@@ -184,6 +184,17 @@
     for (NSString *key in sortedKeys) {
         NSInteger count = [[AXNManager sharedInstance].notificationRequests[key] count];
         if (count == 0) continue;
+
+        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+            count = 0;
+            NSMutableArray *coalescedNotifications = [NSMutableArray new];
+            for (NCNotificationRequest *req in [AXNManager sharedInstance].notificationRequests[key]) {
+                NCCoalescedNotification *coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
+                if (![coalescedNotifications containsObject:coalesced]) count += [coalesced.notificationRequests count];
+                [coalescedNotifications addObject:coalesced];
+            }
+        }
+
         [self.list addObject:@{
             @"bundleIdentifier": key,
             @"notificationCount": @(count)

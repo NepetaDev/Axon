@@ -35,6 +35,12 @@
 
 @end
 
+@interface NCCoalescedNotification : NSObject
+
+@property (nonatomic,copy,readonly) NSArray * notificationRequests;
+
+@end
+
 @interface NCNotificationCombinedListViewController : UIViewController
 
 @property (nonatomic, assign) BOOL axnAllowChanges;
@@ -67,6 +73,8 @@
 @end
 
 @interface NCNotificationStore : NSObject
+
+-(NCCoalescedNotification *)coalescedNotificationForRequest:(id)arg1 ;
 
 @end
 
