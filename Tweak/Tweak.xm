@@ -199,6 +199,15 @@ NCNotificationDispatcher *dispatcher = nil;
     [[AXNManager sharedInstance].view refresh];
 }
 
+%new
+-(id)axnNotificationRequests {
+    NSMutableOrderedSet *allRequests = [NSMutableOrderedSet new];
+    for (NSMutableOrderedSet *requests in [AXNManager sharedInstance].notificationRequests) {
+        [allRequests addObjectsFromArray:[requests array]];
+    }
+    return allRequests;
+}
+
 %end
 
 #pragma mark Compatibility stuff

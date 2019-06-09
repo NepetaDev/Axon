@@ -38,6 +38,7 @@
 
 @property (nonatomic, assign) BOOL axnAllowChanges;
 -(id)allNotificationRequests;
+-(id)axnNotificationRequests;
 -(bool)insertNotificationRequest:(id)arg1 forCoalescedNotification:(id)arg2 ;
 -(void)removeNotificationRequest:(id)arg1 forCoalescedNotification:(id)arg2 ;
 -(bool)modifyNotificationRequest:(id)arg1 forCoalescedNotification:(id)arg2 ;
