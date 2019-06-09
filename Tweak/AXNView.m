@@ -16,6 +16,7 @@
     self.collectionViewLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:self.collectionViewLayout];
+    self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
