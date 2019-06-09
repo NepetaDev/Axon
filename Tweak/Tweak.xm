@@ -199,6 +199,16 @@ NCNotificationDispatcher *dispatcher = nil;
     [[AXNManager sharedInstance].view refresh];
 }
 
+/* Fix pull to clear all tweaks. */
+
+-(void)_clearAllPriorityListNotificationRequests {}
+
+-(void)clearAll {
+    [dispatcher destination:nil requestsClearingNotificationRequests:[self axnNotificationRequests]];
+}
+
+/* Compatibility thing for other tweaks. */
+
 %new
 -(id)axnNotificationRequests {
     NSMutableOrderedSet *allRequests = [NSMutableOrderedSet new];
