@@ -66,31 +66,33 @@ NCNotificationDispatcher *dispatcher = nil;
 -(void)viewDidLoad {
     %orig;
 
-    initialized = YES;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(0,0,64,90)];
-    self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.axnView.hapticFeedback = hapticFeedback;
-    self.axnView.badgesEnabled = badgesEnabled;
-    self.axnView.badgesShowBackground = badgesShowBackground;
-    self.axnView.selectionStyle = selectionStyle;
-    self.axnView.style = style;
-    self.axnView.sortingMode = sortingMode;
-    self.axnView.darkMode = darkMode;
-    [AXNManager sharedInstance].view = self.axnView;
+    if (!initialized) {
+        initialized = YES;
+        UIStackView *stackView = [self valueForKey:@"_stackView"];
+        self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(0,0,64,90)];
+        self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.axnView.hapticFeedback = hapticFeedback;
+        self.axnView.badgesEnabled = badgesEnabled;
+        self.axnView.badgesShowBackground = badgesShowBackground;
+        self.axnView.selectionStyle = selectionStyle;
+        self.axnView.style = style;
+        self.axnView.sortingMode = sortingMode;
+        self.axnView.darkMode = darkMode;
+        [AXNManager sharedInstance].view = self.axnView;
 
-    if (clvc) [AXNManager sharedInstance].view.clvc = clvc;
-    if (sbclvc) [AXNManager sharedInstance].view.sbclvc = sbclvc;
-    if (dispatcher) [AXNManager sharedInstance].view.dispatcher = dispatcher;
+        if (clvc) [AXNManager sharedInstance].view.clvc = clvc;
+        if (sbclvc) [AXNManager sharedInstance].view.sbclvc = sbclvc;
+        if (dispatcher) [AXNManager sharedInstance].view.dispatcher = dispatcher;
 
-    [stackView addArrangedSubview:self.axnView];
+        [stackView addArrangedSubview:self.axnView];
 
-    [NSLayoutConstraint activateConstraints:@[
-        [self.axnView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-        [self.axnView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-        [self.axnView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-        [self.axnView.heightAnchor constraintEqualToConstant:90]
-    ]];
+        [NSLayoutConstraint activateConstraints:@[
+            [self.axnView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [self.axnView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [self.axnView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [self.axnView.heightAnchor constraintEqualToConstant:90]
+        ]];
+    }
 }
 
 /* This is used to make the Axon view last, e.g. when media controls are presented. */
