@@ -98,6 +98,8 @@
         [self.clvc insertNotificationRequest:req forCoalescedNotification:nil];
     }
     self.clvc.axnAllowChanges = NO;
+
+    [[NSClassFromString(@"SBIdleTimerGlobalCoordinator") sharedInstance] resetIdleTimer];
     
     [self.clvc setDidPlayRevealHaptic:YES];
     [self.clvc forceNotificationHistoryRevealed:YES animated:NO];

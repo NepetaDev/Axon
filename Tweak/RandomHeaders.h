@@ -143,3 +143,10 @@
 -(void)setLegibilitySettings:(_UILegibilitySettings *)arg1 ;
 
 @end
+
+@interface SBIdleTimerGlobalCoordinator : NSObject
+
++(id)sharedInstance;
+-(void)resetIdleTimer;
+
+@end
