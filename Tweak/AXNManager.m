@@ -88,7 +88,7 @@
 
             if (!found) [self.notificationRequests[bundleIdentifier] addObject:req];
         } else {
-            self.notificationRequests[bundleIdentifier] = [NSMutableOrderedSet new];
+            self.notificationRequests[bundleIdentifier] = [NSMutableArray new];
             [self.notificationRequests[bundleIdentifier] addObject:req];
         }
     }

@@ -162,10 +162,6 @@
     [self.list removeAllObjects];
     NSArray *sortedKeys = @[];
 
-    for (NSString *key in [AXNManager sharedInstance].names) {
-        NSString *val = [AXNManager sharedInstance].names[key];
-    }
-
     switch (self.sortingMode) {
         case 1:
             sortedKeys = [[[AXNManager sharedInstance].notificationRequests allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
