@@ -95,7 +95,11 @@
     
     self.clvc.axnAllowChanges = YES;
     for (id req in [AXNManager sharedInstance].notificationRequests[cell.bundleIdentifier]) {
-        [self.clvc insertNotificationRequest:req forCoalescedNotification:nil];
+        NCCoalescedNotification *coalesced = nil;
+        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+            coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
+        }
+        [self.clvc insertNotificationRequest:req forCoalescedNotification:coalesced];
     }
     self.clvc.axnAllowChanges = NO;
 
@@ -110,8 +114,12 @@
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     self.clvc.axnAllowChanges = YES;
     for (id req in [self.clvc allNotificationRequests]) {
+        NCCoalescedNotification *coalesced = nil;
+        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+            coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
+        }
         [[AXNManager sharedInstance] insertNotificationRequest:req];
-        [self.clvc removeNotificationRequest:req forCoalescedNotification:nil];
+        [self.clvc removeNotificationRequest:req forCoalescedNotification:coalesced];
     }
     self.clvc.axnAllowChanges = NO;
 
@@ -156,7 +164,6 @@
 
     for (NSString *key in [AXNManager sharedInstance].names) {
         NSString *val = [AXNManager sharedInstance].names[key];
-        NSLog(@"[Axon] names, %@ = %@", key, val);
     }
 
     switch (self.sortingMode) {
