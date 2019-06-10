@@ -219,7 +219,7 @@ NCNotificationDispatcher *dispatcher = nil;
 -(id)axnNotificationRequests {
     NSMutableOrderedSet *allRequests = [NSMutableOrderedSet new];
     for (NSString *key in [[AXNManager sharedInstance].notificationRequests allKeys]) {
-        [allRequests addObjectsFromArray:[[AXNManager sharedInstance].notificationRequests[key] array]];
+        [allRequests addObjectsFromArray:[AXNManager sharedInstance].notificationRequests[key]];
     }
     return allRequests;
 }
