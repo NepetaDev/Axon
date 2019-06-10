@@ -64,6 +64,7 @@
 -(id)_coalescingIdentifierForNotificationRequest:(id)arg1 ;
 -(bool)hasContent;
 -(void)clearAllCoalescingControlsCells;
+-(void)clearAll;
 
 @end
 
