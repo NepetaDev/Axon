@@ -63,48 +63,44 @@
 }
 
 -(void)insertNotificationRequest:(NCNotificationRequest *)req {
-    if (!req) return;
-    if (req.bulletin && req.bulletin.sectionID) {
-        NSString *bundleIdentifier = req.bulletin.sectionID;
+    if (!req || ![req notificationIdentifier] || !req.bulletin || !req.bulletin.sectionID) return;
+    NSString *bundleIdentifier = req.bulletin.sectionID;
 
-        if (req.content && req.content.header) {
-            self.names[bundleIdentifier] = [req.content.header copy];
+    if (req.content && req.content.header) {
+        self.names[bundleIdentifier] = [req.content.header copy];
+    }
+
+    if (req.timestamp) {
+        if (!self.timestamps[bundleIdentifier] || [req.timestamp compare:self.timestamps[bundleIdentifier]] == NSOrderedDescending) {
+            self.timestamps[bundleIdentifier] = [req.timestamp copy];
         }
+    }
 
-        if (req.timestamp) {
-            if (!self.timestamps[bundleIdentifier] || [req.timestamp compare:self.timestamps[bundleIdentifier]] == NSOrderedDescending) {
-                self.timestamps[bundleIdentifier] = [req.timestamp copy];
+    if (self.notificationRequests[bundleIdentifier]) {
+        BOOL found = NO;
+        for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
+            NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
+            if (request && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
+                found = YES;
+                break;
             }
         }
 
-        if (self.notificationRequests[bundleIdentifier]) {
-            BOOL found = NO;
-            for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
-                NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
-                if (request && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
-                    found = YES;
-                    break;
-                }
-            }
-
-            if (!found) [self.notificationRequests[bundleIdentifier] addObject:req];
-        } else {
-            self.notificationRequests[bundleIdentifier] = [NSMutableArray new];
-            [self.notificationRequests[bundleIdentifier] addObject:req];
-        }
+        if (!found) [self.notificationRequests[bundleIdentifier] addObject:req];
+    } else {
+        self.notificationRequests[bundleIdentifier] = [NSMutableArray new];
+        [self.notificationRequests[bundleIdentifier] addObject:req];
     }
 }
 
 -(void)removeNotificationRequest:(NCNotificationRequest *)req {
-    if (!req) return;
-    if (req.bulletin && req.bulletin.sectionID) {
-        NSString *bundleIdentifier = req.bulletin.sectionID;
-        if (self.notificationRequests[bundleIdentifier]) {
-            for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
-                NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
-                if (request && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
-                    [self.notificationRequests[bundleIdentifier] removeObject:request];
-                }
+    if (!req || ![req notificationIdentifier] || !req.bulletin || !req.bulletin.sectionID) return;
+    NSString *bundleIdentifier = req.bulletin.sectionID;
+    if (self.notificationRequests[bundleIdentifier]) {
+        for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
+            NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
+            if (request && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
+                [self.notificationRequests[bundleIdentifier] removeObject:request];
             }
         }
     }
@@ -112,17 +108,15 @@
 
 
 -(void)modifyNotificationRequest:(NCNotificationRequest *)req {
-    if (!req || ![req notificationIdentifier]) return;
-    if (req.bulletin && req.bulletin.sectionID) {
-        NSString *bundleIdentifier = req.bulletin.sectionID;
-        if (self.notificationRequests[bundleIdentifier]) {
-            for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
-                NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
-                if (request && [request notificationIdentifier] && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
-                    [self.notificationRequests[bundleIdentifier] removeObjectAtIndex:i];
-                    [self.notificationRequests[bundleIdentifier] insertObject:req atIndex:i];
-                    return;
-                }
+    if (!req || ![req notificationIdentifier] || !req.bulletin || !req.bulletin.sectionID) return;
+    NSString *bundleIdentifier = req.bulletin.sectionID;
+    if (self.notificationRequests[bundleIdentifier]) {
+        for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
+            NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
+            if (request && [request notificationIdentifier] && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
+                [self.notificationRequests[bundleIdentifier] removeObjectAtIndex:i];
+                [self.notificationRequests[bundleIdentifier] insertObject:req atIndex:i];
+                return;
             }
         }
     }
