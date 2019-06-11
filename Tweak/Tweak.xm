@@ -202,7 +202,7 @@ NCNotificationDispatcher *dispatcher = nil;
 /* Fix pull to clear all tweaks. */
 
 -(void)_clearAllPriorityListNotificationRequests {
-    [self clearAll];
+    [dispatcher destination:nil requestsClearingNotificationRequests:[self allNotificationRequests]];
 }
 
 -(void)_clearAllNotificationRequests {
