@@ -133,6 +133,7 @@
     switch (self.style) {
         case 1: return CGSizeMake(64, 64);
         case 2: return CGSizeMake(48, 48);
+        case 3: return CGSizeMake(40, 64);
         default: return CGSizeMake(64, 90); 
     }
 }
@@ -142,6 +143,7 @@
     CGFloat width = 64;
 
     if (self.style == 2) width = 48;
+    if (self.style == 3) width = 40;
 
     NSInteger count = [self collectionView:collectionView numberOfItemsInSection:section];
     CGFloat totalCellWidth = width * count;

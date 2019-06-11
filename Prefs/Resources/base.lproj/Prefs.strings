@@ -8,6 +8,7 @@
   "DEFAULT" = "Default";
   "PACKED" = "Packed";
   "COMPACT" = "Compact";
+  "TINY" = "Tiny";
 
   "SORTING" = "Sorting";
   "BY_DATE" = "Latest";

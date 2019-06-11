@@ -65,6 +65,17 @@
         [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
     ];
 
+    _styleConstraintsTiny = @[
+        [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5],
+        [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
+        [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
+        [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-25],
+        [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+        [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
+        [self.badgeLabel.heightAnchor constraintEqualToConstant:20],
+        [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
+    ];
+
     return self;
 }
 
@@ -140,6 +151,7 @@
     [NSLayoutConstraint deactivateConstraints:_styleConstraintsDefault];
     [NSLayoutConstraint deactivateConstraints:_styleConstraintsPacked];
     [NSLayoutConstraint deactivateConstraints:_styleConstraintsCompact];
+    [NSLayoutConstraint deactivateConstraints:_styleConstraintsTiny];
 
     switch (style) {
         case 1:
@@ -147,6 +159,9 @@
             break;
         case 2:
             [NSLayoutConstraint activateConstraints:_styleConstraintsCompact];
+            break;
+        case 3:
+            [NSLayoutConstraint activateConstraints:_styleConstraintsTiny];
             break;
         default:
             [NSLayoutConstraint activateConstraints:_styleConstraintsDefault];

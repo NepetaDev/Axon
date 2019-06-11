@@ -2,6 +2,7 @@
     NSArray *_styleConstraintsDefault;
     NSArray *_styleConstraintsPacked;
     NSArray *_styleConstraintsCompact;
+    NSArray *_styleConstraintsTiny;
 }
 
 @property (nonatomic, retain) UIImageView *iconView;
