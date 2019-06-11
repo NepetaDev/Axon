@@ -63,7 +63,8 @@
 }
 
 -(void)insertNotificationRequest:(NCNotificationRequest *)req {
-    if (req.bulletin.sectionID) {
+    if (!req) return;
+    if (req.bulletin && req.bulletin.sectionID) {
         NSString *bundleIdentifier = req.bulletin.sectionID;
 
         if (req.content && req.content.header) {
@@ -95,7 +96,8 @@
 }
 
 -(void)removeNotificationRequest:(NCNotificationRequest *)req {
-    if (req.bulletin.sectionID) {
+    if (!req) return;
+    if (req.bulletin && req.bulletin.sectionID) {
         NSString *bundleIdentifier = req.bulletin.sectionID;
         if (self.notificationRequests[bundleIdentifier]) {
             for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
@@ -110,13 +112,15 @@
 
 
 -(void)modifyNotificationRequest:(NCNotificationRequest *)req {
-    if (req.bulletin.sectionID) {
+    if (!req || ![req notificationIdentifier]) return;
+    if (req.bulletin && req.bulletin.sectionID) {
         NSString *bundleIdentifier = req.bulletin.sectionID;
         if (self.notificationRequests[bundleIdentifier]) {
             for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
                 NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
-                if (request && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
-                    self.notificationRequests[bundleIdentifier][i] = req;
+                if (request && [request notificationIdentifier] && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
+                    [self.notificationRequests[bundleIdentifier] removeObjectAtIndex:i];
+                    [self.notificationRequests[bundleIdentifier] insertObject:req atIndex:i];
                     return;
                 }
             }
