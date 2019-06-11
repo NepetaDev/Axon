@@ -10,6 +10,7 @@
 
     self.badgesEnabled = YES;
     self.badgesShowBackground = YES;
+    self.showingLatestRequest = NO;
     self.list = [NSMutableArray new];
 
     self.collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
@@ -41,6 +42,13 @@
 }
 
 - (void)reset {
+    if (self.showByDefault == 3) return;
+
+    if (self.showByDefault == 2 && [self.list count] > 0 && [self.list[0][@"bundleIdentifier"] isEqualToString:self.selectedBundleIdentifier]) {
+        return;
+    }
+
+    self.showingLatestRequest = NO;
     self.selectedBundleIdentifier = nil;
     self.clvc.axnAllowChanges = YES;
     for (id req in [self.clvc allNotificationRequests]) {
@@ -48,6 +56,27 @@
         [self.clvc removeNotificationRequest:req forCoalescedNotification:nil];
     }
     self.clvc.axnAllowChanges = NO;
+
+    switch (self.showByDefault) {
+        case 1:
+            if ([AXNManager sharedInstance].latestRequest) {
+                self.clvc.axnAllowChanges = YES;
+                NCCoalescedNotification *coalesced = nil;
+                if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+                    coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:[AXNManager sharedInstance].latestRequest];
+                }
+                [self.clvc insertNotificationRequest:[AXNManager sharedInstance].latestRequest forCoalescedNotification:coalesced];
+                self.clvc.axnAllowChanges = NO;
+                self.showingLatestRequest = YES;
+            }
+            break;
+        case 2:
+            if ([self.list count] > 0) {
+                [self collectionView:self.collectionView didSelectItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+            }
+            return;
+    }
+
     [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
 
     [self.clvc forceNotificationHistoryRevealed:NO animated:NO];
@@ -92,6 +121,18 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     AXNAppCell *cell = (AXNAppCell *)[collectionView cellForItemAtIndexPath:indexPath];
     self.selectedBundleIdentifier = cell.bundleIdentifier;
+
+    if (self.showingLatestRequest && [AXNManager sharedInstance].latestRequest) {
+        self.clvc.axnAllowChanges = YES;
+        NCNotificationRequest *req = [AXNManager sharedInstance].latestRequest;
+        NCCoalescedNotification *coalesced = nil;
+        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+            coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
+        }
+        [[AXNManager sharedInstance] insertNotificationRequest:req];
+        [self.clvc removeNotificationRequest:req forCoalescedNotification:coalesced];
+        self.clvc.axnAllowChanges = NO;
+    }
     
     self.clvc.axnAllowChanges = YES;
     for (id req in [AXNManager sharedInstance].notificationRequests[cell.bundleIdentifier]) {
@@ -102,6 +143,7 @@
         [self.clvc insertNotificationRequest:req forCoalescedNotification:coalesced];
     }
     self.clvc.axnAllowChanges = NO;
+    self.showingLatestRequest = NO;
 
     [[NSClassFromString(@"SBIdleTimerGlobalCoordinator") sharedInstance] resetIdleTimer];
     
@@ -122,6 +164,7 @@
         [self.clvc removeNotificationRequest:req forCoalescedNotification:coalesced];
     }
     self.clvc.axnAllowChanges = NO;
+    self.showingLatestRequest = NO;
 
     [self.clvc forceNotificationHistoryRevealed:NO animated:NO];
     [self.clvc setNotificationHistorySectionNeedsReload:YES];

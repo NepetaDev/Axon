@@ -10,6 +10,12 @@
   "COMPACT" = "Compact";
   "TINY" = "Tiny";
 
+  "SHOW" = "Show by default";
+  "NOTHING" = "Nothing";
+  "LATEST_NOTIFICATION" = "Latest notification";
+  "FIRST_SECTION" = "First section";
+  "SELECTED_SECTION" = "Selected section";
+
   "SORTING" = "Sorting";
   "BY_DATE" = "Latest";
   "BY_NAME" = "By app name";

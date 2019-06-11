@@ -11,6 +11,7 @@ BOOL darkMode;
 NSInteger sortingMode;
 NSInteger selectionStyle;
 NSInteger style;
+NSInteger showByDefault;
 NCNotificationCombinedListViewController *clvc = nil;
 SBDashBoardCombinedListViewController *sbclvc = nil;
 NCNotificationDispatcher *dispatcher = nil;
@@ -78,6 +79,7 @@ NCNotificationDispatcher *dispatcher = nil;
         self.axnView.style = style;
         self.axnView.sortingMode = sortingMode;
         self.axnView.darkMode = darkMode;
+        self.axnView.showByDefault = showByDefault;
         [AXNManager sharedInstance].view = self.axnView;
 
         if (clvc) [AXNManager sharedInstance].view.clvc = clvc;
@@ -159,17 +161,29 @@ NCNotificationDispatcher *dispatcher = nil;
         if ([bundleIdentifier isEqualToString:[AXNManager sharedInstance].view.selectedBundleIdentifier]) %orig;
     }
 
+    if (![AXNManager sharedInstance].view.selectedBundleIdentifier && showByDefault == 1) {
+        [[AXNManager sharedInstance].view reset];
+    }
+
     return YES;
 }
 
 -(bool)removeNotificationRequest:(NCNotificationRequest *)req forCoalescedNotification:(id)arg2 {
     if (self.axnAllowChanges) return %orig;     // This condition is true when Axon is updating filtered notifications for display.
+
+    NSString *identifier = [[req notificationIdentifier] copy];
+
     [[AXNManager sharedInstance] removeNotificationRequest:req];
     [[AXNManager sharedInstance].view refresh];
 
     if (req.bulletin.sectionID) {
         NSString *bundleIdentifier = req.bulletin.sectionID;
         if ([bundleIdentifier isEqualToString:[AXNManager sharedInstance].view.selectedBundleIdentifier]) %orig;
+    }
+
+    if ([AXNManager sharedInstance].view.showingLatestRequest && identifier &&
+    [[[AXNManager sharedInstance].latestRequest notificationIdentifier] isEqualToString:identifier]) {
+        %orig;
     }
 
     return YES;
@@ -206,7 +220,7 @@ NCNotificationDispatcher *dispatcher = nil;
 }
 
 -(void)_clearAllNotificationRequests {
-    [self clearAll];
+    [dispatcher destination:nil requestsClearingNotificationRequests:[self allNotificationRequests]];
 }
 
 -(void)clearAll {
@@ -243,19 +257,8 @@ NCNotificationDispatcher *dispatcher = nil;
 
 /* The only way I know of... AutoUnlockX */
 
--(BOOL)flashlightOn {
+-(BOOL)externalBlocksUnlock {
     if (sbclvc && [sbclvc hasContent]) return [sbclvc hasContent];
-    return %orig;
-}
-
-%end
-
-%hook PreferencesManager
-
-/* I'm really sorry lol */
-
-+(id)getPrefForKey:(NSString *)key {
-    if ([key isEqualToString:@"DisableIfFlashlight"]) return @(YES);
     return %orig;
 }
 
@@ -351,6 +354,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     [preferences registerInteger:&sortingMode default:0 forKey:@"SortingMode"];
     [preferences registerInteger:&selectionStyle default:0 forKey:@"SelectionStyle"];
     [preferences registerInteger:&style default:0 forKey:@"Style"];
+    [preferences registerInteger:&showByDefault default:0 forKey:@"ShowByDefault"];
     [preferences registerPreferenceChangeBlock:^() {
         if (initialized && [AXNManager sharedInstance].view) {
             [AXNManager sharedInstance].view.hapticFeedback = hapticFeedback;
@@ -360,6 +364,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
             [AXNManager sharedInstance].view.sortingMode = sortingMode;
             [AXNManager sharedInstance].view.style = style;
             [AXNManager sharedInstance].view.darkMode = darkMode;
+            [AXNManager sharedInstance].view.showByDefault = showByDefault;
         }
     }];
 

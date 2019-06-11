@@ -1,4 +1,5 @@
 #import "AXNView.h"
+#import "RandomHeaders.h"
 
 @interface AXNManager : NSObject
 
@@ -9,6 +10,7 @@
 @property (nonatomic, retain) NSMutableDictionary *backgroundColorCache;
 @property (nonatomic, retain) NSMutableDictionary *textColorCache;
 @property (nonatomic, retain) UIColor *fallbackColor;
+@property (nonatomic, weak) NCNotificationRequest *latestRequest;
 @property (nonatomic, weak) AXNView *view;
 +(instancetype)sharedInstance;
 -(id)init;

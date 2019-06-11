@@ -74,6 +74,10 @@
         if (!self.timestamps[bundleIdentifier] || [req.timestamp compare:self.timestamps[bundleIdentifier]] == NSOrderedDescending) {
             self.timestamps[bundleIdentifier] = [req.timestamp copy];
         }
+
+        if (!self.latestRequest || [req.timestamp compare:self.latestRequest.timestamp] == NSOrderedDescending) {
+            self.latestRequest = req;
+        }
     }
 
     if (self.notificationRequests[bundleIdentifier]) {
@@ -96,6 +100,11 @@
 -(void)removeNotificationRequest:(NCNotificationRequest *)req {
     if (!req || ![req notificationIdentifier] || !req.bulletin || !req.bulletin.sectionID) return;
     NSString *bundleIdentifier = req.bulletin.sectionID;
+
+    if (self.latestRequest && [[self.latestRequest notificationIdentifier] isEqualToString:[req notificationIdentifier]]) {
+        self.latestRequest = nil;
+    }
+
     if (self.notificationRequests[bundleIdentifier]) {
         for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
             NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
@@ -110,6 +119,11 @@
 -(void)modifyNotificationRequest:(NCNotificationRequest *)req {
     if (!req || ![req notificationIdentifier] || !req.bulletin || !req.bulletin.sectionID) return;
     NSString *bundleIdentifier = req.bulletin.sectionID;
+
+    if (self.latestRequest && [[self.latestRequest notificationIdentifier] isEqualToString:[req notificationIdentifier]]) {
+        self.latestRequest = req;
+    }
+
     if (self.notificationRequests[bundleIdentifier]) {
         for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
             NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
@@ -119,6 +133,14 @@
                 return;
             }
         }
+    }
+}
+
+-(void)setLatestRequest:(NCNotificationRequest *)request {
+    _latestRequest = request;
+
+    if (self.view.showingLatestRequest) {
+        [self.view reset];
     }
 }
 

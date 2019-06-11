@@ -14,9 +14,11 @@
 @property (nonatomic, assign) BOOL badgesEnabled;
 @property (nonatomic, assign) BOOL badgesShowBackground;
 @property (nonatomic, assign) BOOL darkMode;
+@property (nonatomic, assign) BOOL showingLatestRequest;
 @property (nonatomic, assign) NSInteger selectionStyle;
 @property (nonatomic, assign) NSInteger style;
 @property (nonatomic, assign) NSInteger sortingMode;
+@property (nonatomic, assign) NSInteger showByDefault;
 
 -(void)refresh;
 -(void)reset;
