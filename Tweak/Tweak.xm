@@ -191,12 +191,20 @@ NCNotificationDispatcher *dispatcher = nil;
 
 -(bool)modifyNotificationRequest:(NCNotificationRequest *)req forCoalescedNotification:(id)arg2 {
     if (self.axnAllowChanges) return %orig;     // This condition is true when Axon is updating filtered notifications for display.
+    
+    NSString *identifier = [[req notificationIdentifier] copy];
+
     [[AXNManager sharedInstance] modifyNotificationRequest:req];
     [[AXNManager sharedInstance].view refresh];
 
     if (req.bulletin.sectionID) {
         NSString *bundleIdentifier = req.bulletin.sectionID;
         if ([bundleIdentifier isEqualToString:[AXNManager sharedInstance].view.selectedBundleIdentifier]) %orig;
+    }
+
+    if ([AXNManager sharedInstance].view.showingLatestRequest && identifier &&
+    [[[AXNManager sharedInstance].latestRequest notificationIdentifier] isEqualToString:identifier]) {
+        %orig;
     }
 
     return YES;
