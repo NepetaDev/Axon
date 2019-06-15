@@ -33,6 +33,7 @@
 -(void)hideNotificationRequests:(id)reqs;
 
 -(id)requestsForBundleIdentifier:(NSString *)bundleIdentifier;
+-(NSArray *)allRequestsForBundleIdentifier:(NSString *)bundleIdentifier;
 -(void)showNotificationRequestsForBundleIdentifier:(NSString *)bundleIdentifier;
 -(void)hideAllNotificationRequests;
 -(void)revealNotificationHistory:(BOOL)revealed;

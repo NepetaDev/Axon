@@ -112,7 +112,7 @@
 
 -(void)clearAll:(NSString *)bundleIdentifier {
     if (self.notificationRequests[bundleIdentifier]) {
-        [self.dispatcher destination:nil requestsClearingNotificationRequests:[self requestsForBundleIdentifier:bundleIdentifier]];
+        [self.dispatcher destination:nil requestsClearingNotificationRequests:[self allRequestsForBundleIdentifier:bundleIdentifier]];
     }
 }
 
@@ -218,6 +218,53 @@
     }
 
     return array;
+}
+
+-(NSArray *)allRequestsForBundleIdentifier:(NSString *)bundleIdentifier {
+    NSArray *requests = [self requestsForBundleIdentifier:bundleIdentifier];
+    NSMutableArray *allRequests = [NSMutableArray new];
+
+    if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+        NSMutableArray *coalescedNotifications = [NSMutableArray new];
+        for (NCNotificationRequest *req in requests) {
+            NCCoalescedNotification *coalesced = [self coalescedNotificationForRequest:req];
+            if (!coalesced) {
+                BOOL found = NO;
+                for (int i = 0; i < [allRequests count]; i++) {
+                    if ([[req notificationIdentifier] isEqualToString:[allRequests[i] notificationIdentifier]]) {
+                        found = YES;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    [allRequests addObject:req];
+                }
+                continue;
+            }
+            
+            if (![coalescedNotifications containsObject:coalesced]) {
+                for (NCNotificationRequest *request in coalesced.notificationRequests) {
+                    BOOL found = NO;
+                    for (int i = 0; i < [allRequests count]; i++) {
+                        if ([[request notificationIdentifier] isEqualToString:[allRequests[i] notificationIdentifier]]) {
+                            found = YES;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        [allRequests addObject:request];
+                    }
+                }
+                [coalescedNotifications addObject:coalesced];
+            }
+        }
+
+        return allRequests;
+    } else {
+        return requests;
+    }
 }
 
 -(id)coalescedNotificationForRequest:(id)req {
