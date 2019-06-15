@@ -42,7 +42,10 @@
 -(void)updateCountForBundleIdentifier:(NSString *)bundleIdentifier {
     NSArray *requests = [self requestsForBundleIdentifier:bundleIdentifier];
     NSInteger count = [requests count];
-    if (count == 0) return;
+    if (count == 0) {
+        self.countCache[bundleIdentifier] = @(0);
+        return;
+    }
 
     if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
         count = 0;
