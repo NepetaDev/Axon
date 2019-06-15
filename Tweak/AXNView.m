@@ -50,23 +50,12 @@
 
     self.showingLatestRequest = NO;
     self.selectedBundleIdentifier = nil;
-    self.clvc.axnAllowChanges = YES;
-    for (id req in [self.clvc allNotificationRequests]) {
-        [[AXNManager sharedInstance] insertNotificationRequest:req];
-        [self.clvc removeNotificationRequest:req forCoalescedNotification:nil];
-    }
-    self.clvc.axnAllowChanges = NO;
+    [[AXNManager sharedInstance] hideAllNotificationRequests];
 
     switch (self.showByDefault) {
         case 1:
             if ([AXNManager sharedInstance].latestRequest) {
-                self.clvc.axnAllowChanges = YES;
-                NCCoalescedNotification *coalesced = nil;
-                if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
-                    coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:[AXNManager sharedInstance].latestRequest];
-                }
-                [self.clvc insertNotificationRequest:[AXNManager sharedInstance].latestRequest forCoalescedNotification:coalesced];
-                self.clvc.axnAllowChanges = NO;
+                [[AXNManager sharedInstance] showNotificationRequest:[AXNManager sharedInstance].latestRequest];
                 self.showingLatestRequest = YES;
             }
             break;
@@ -78,11 +67,7 @@
     }
 
     [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
-
-    [self.clvc forceNotificationHistoryRevealed:NO animated:NO];
-    [self.clvc setNotificationHistorySectionNeedsReload:YES];
-    [self.clvc _reloadNotificationHistorySectionIfNecessary];
-    if ([self.clvc respondsToSelector:@selector(clearAllCoalescingControlsCells)]) [self.clvc clearAllCoalescingControlsCells];
+    [[AXNManager sharedInstance] revealNotificationHistory:NO];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -123,53 +108,21 @@
     self.selectedBundleIdentifier = cell.bundleIdentifier;
 
     if (self.showingLatestRequest && [AXNManager sharedInstance].latestRequest) {
-        self.clvc.axnAllowChanges = YES;
-        NCNotificationRequest *req = [AXNManager sharedInstance].latestRequest;
-        NCCoalescedNotification *coalesced = nil;
-        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
-            coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
-        }
-        [[AXNManager sharedInstance] insertNotificationRequest:req];
-        [self.clvc removeNotificationRequest:req forCoalescedNotification:coalesced];
-        self.clvc.axnAllowChanges = NO;
+        [[AXNManager sharedInstance] hideNotificationRequest:[AXNManager sharedInstance].latestRequest];
     }
     
-    self.clvc.axnAllowChanges = YES;
-    for (id req in [AXNManager sharedInstance].notificationRequests[cell.bundleIdentifier]) {
-        NCCoalescedNotification *coalesced = nil;
-        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
-            coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
-        }
-        [self.clvc insertNotificationRequest:req forCoalescedNotification:coalesced];
-    }
-    self.clvc.axnAllowChanges = NO;
+    [[AXNManager sharedInstance] showNotificationRequestsForBundleIdentifier:cell.bundleIdentifier];
     self.showingLatestRequest = NO;
 
     [[NSClassFromString(@"SBIdleTimerGlobalCoordinator") sharedInstance] resetIdleTimer];
-    
-    [self.clvc setDidPlayRevealHaptic:YES];
-    [self.clvc forceNotificationHistoryRevealed:YES animated:NO];
-    [self.clvc setNotificationHistorySectionNeedsReload:YES];
-    [self.clvc _reloadNotificationHistorySectionIfNecessary];
+    [[AXNManager sharedInstance] revealNotificationHistory:YES];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    self.clvc.axnAllowChanges = YES;
-    for (id req in [self.clvc allNotificationRequests]) {
-        NCCoalescedNotification *coalesced = nil;
-        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
-            coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
-        }
-        [[AXNManager sharedInstance] insertNotificationRequest:req];
-        [self.clvc removeNotificationRequest:req forCoalescedNotification:coalesced];
-    }
-    self.clvc.axnAllowChanges = NO;
+    [[AXNManager sharedInstance] hideAllNotificationRequests];
     self.showingLatestRequest = NO;
 
-    [self.clvc forceNotificationHistoryRevealed:NO animated:NO];
-    [self.clvc setNotificationHistorySectionNeedsReload:YES];
-    [self.clvc _reloadNotificationHistorySectionIfNecessary];
-    if ([self.clvc respondsToSelector:@selector(clearAllCoalescingControlsCells)]) [self.clvc clearAllCoalescingControlsCells];
+    [[AXNManager sharedInstance] revealNotificationHistory:NO];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -236,11 +189,11 @@
         NSInteger count = [[AXNManager sharedInstance].notificationRequests[key] count];
         if (count == 0) continue;
 
-        if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+        if ([[AXNManager sharedInstance].dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
             count = 0;
             NSMutableArray *coalescedNotifications = [NSMutableArray new];
             for (NCNotificationRequest *req in [AXNManager sharedInstance].notificationRequests[key]) {
-                NCCoalescedNotification *coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
+                NCCoalescedNotification *coalesced = [[AXNManager sharedInstance].dispatcher.notificationStore coalescedNotificationForRequest:req];
                 if (!coalesced) {
                     count++;
                     continue;
@@ -258,7 +211,7 @@
     }
 
     [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
-    [self.sbclvc _setListHasContent:([self.list count] > 0)];
+    [[AXNManager sharedInstance].sbclvc _setListHasContent:([self.list count] > 0)];
 }
 
 /* Compatibility stuff to keep it from safe moding. */

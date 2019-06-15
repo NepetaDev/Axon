@@ -12,9 +12,6 @@ NSInteger sortingMode;
 NSInteger selectionStyle;
 NSInteger style;
 NSInteger showByDefault;
-NCNotificationCombinedListViewController *clvc = nil;
-SBDashBoardCombinedListViewController *sbclvc = nil;
-NCNotificationDispatcher *dispatcher = nil;
 
 %group Axon
 
@@ -45,15 +42,13 @@ NCNotificationDispatcher *dispatcher = nil;
 
 -(id)init {
     %orig;
-    dispatcher = self.dispatcher;
-    if ([AXNManager sharedInstance].view) [AXNManager sharedInstance].view.dispatcher = dispatcher;
+    [AXNManager sharedInstance].dispatcher = self.dispatcher;
     return self;
 }
 
 -(void)setDispatcher:(NCNotificationDispatcher *)arg1 {
     %orig;
-    dispatcher = arg1;
-    if ([AXNManager sharedInstance].view) [AXNManager sharedInstance].view.dispatcher = arg1;
+    [AXNManager sharedInstance].dispatcher = arg1;
 }
 
 %end
@@ -81,10 +76,6 @@ NCNotificationDispatcher *dispatcher = nil;
         self.axnView.darkMode = darkMode;
         self.axnView.showByDefault = showByDefault;
         [AXNManager sharedInstance].view = self.axnView;
-
-        if (clvc) [AXNManager sharedInstance].view.clvc = clvc;
-        if (sbclvc) [AXNManager sharedInstance].view.sbclvc = sbclvc;
-        if (dispatcher) [AXNManager sharedInstance].view.dispatcher = dispatcher;
 
         [stackView addArrangedSubview:self.axnView];
 
@@ -127,8 +118,7 @@ NCNotificationDispatcher *dispatcher = nil;
 
 -(void)viewDidLoad{
     %orig;
-    sbclvc = self;
-    if ([AXNManager sharedInstance].view) [AXNManager sharedInstance].view.sbclvc = self;
+    [AXNManager sharedInstance].sbclvc = self;
 }
 
 %end
@@ -143,8 +133,7 @@ NCNotificationDispatcher *dispatcher = nil;
 
 -(id)init {
     %orig;
-    clvc = self;
-    if ([AXNManager sharedInstance].view) [AXNManager sharedInstance].view.clvc = self;
+    [AXNManager sharedInstance].clvc = self;
     self.axnAllowChanges = NO;
     return self;
 }
@@ -224,15 +213,15 @@ NCNotificationDispatcher *dispatcher = nil;
 /* Fix pull to clear all tweaks. */
 
 -(void)_clearAllPriorityListNotificationRequests {
-    [dispatcher destination:nil requestsClearingNotificationRequests:[self allNotificationRequests]];
+    [[AXNManager sharedInstance].dispatcher destination:nil requestsClearingNotificationRequests:[self allNotificationRequests]];
 }
 
 -(void)_clearAllNotificationRequests {
-    [dispatcher destination:nil requestsClearingNotificationRequests:[self allNotificationRequests]];
+    [[AXNManager sharedInstance].dispatcher destination:nil requestsClearingNotificationRequests:[self allNotificationRequests]];
 }
 
 -(void)clearAll {
-    [dispatcher destination:nil requestsClearingNotificationRequests:[self axnNotificationRequests]];
+    [[AXNManager sharedInstance].dispatcher destination:nil requestsClearingNotificationRequests:[self axnNotificationRequests]];
 }
 
 /* Compatibility thing for other tweaks. */
@@ -255,7 +244,7 @@ NCNotificationDispatcher *dispatcher = nil;
 /* FastUnlockX */
 
 -(BOOL)hasVisibleContent {
-    if (sbclvc) return [sbclvc hasContent];
+    if ([AXNManager sharedInstance].sbclvc) return [[AXNManager sharedInstance].sbclvc hasContent];
     return %orig;
 }
 
@@ -266,7 +255,7 @@ NCNotificationDispatcher *dispatcher = nil;
 /* The only way I know of... AutoUnlockX */
 
 -(BOOL)externalBlocksUnlock {
-    if (sbclvc && [sbclvc hasContent]) return [sbclvc hasContent];
+    if ([AXNManager sharedInstance].sbclvc && [[AXNManager sharedInstance].sbclvc hasContent]) return [[AXNManager sharedInstance].sbclvc hasContent];
     return %orig;
 }
 

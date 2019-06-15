@@ -57,8 +57,8 @@
 }
 
 -(void)clearAll:(NSString *)bundleIdentifier {
-    if (self.view && self.notificationRequests[bundleIdentifier]) {
-        [self.view.dispatcher destination:nil requestsClearingNotificationRequests:self.notificationRequests[bundleIdentifier]];
+    if (self.notificationRequests[bundleIdentifier]) {
+        [self.dispatcher destination:nil requestsClearingNotificationRequests:self.notificationRequests[bundleIdentifier]];
     }
 }
 
@@ -142,6 +142,64 @@
     if (self.view.showingLatestRequest) {
         [self.view reset];
     }
+}
+
+-(id)requestsForBundleIdentifier:(NSString *)bundleIdentifier {
+    return self.notificationRequests[bundleIdentifier];
+}
+
+-(id)coalescedNotificationForRequest:(id)req {
+    NCCoalescedNotification *coalesced = nil;
+    if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+        coalesced = [self.dispatcher.notificationStore coalescedNotificationForRequest:req];
+    }
+    return coalesced;
+}
+
+-(void)showNotificationRequest:(NCNotificationRequest *)req {
+    if (!req) return;
+    self.clvc.axnAllowChanges = YES;
+    [self.clvc insertNotificationRequest:req forCoalescedNotification:[self coalescedNotificationForRequest:req]];
+    self.clvc.axnAllowChanges = NO;
+}
+
+-(void)hideNotificationRequest:(NCNotificationRequest *)req {
+    if (!req) return;
+    self.clvc.axnAllowChanges = YES;
+    [self insertNotificationRequest:req];
+    [self.clvc removeNotificationRequest:req forCoalescedNotification:[self coalescedNotificationForRequest:req]];
+    self.clvc.axnAllowChanges = NO;
+
+}
+
+-(void)showNotificationRequests:(id)reqs {
+    if (!reqs) return;
+    for (id req in reqs) {
+        [self showNotificationRequest:req];
+    }
+}
+
+-(void)hideNotificationRequests:(id)reqs {
+    if (!reqs) return;
+    for (id req in reqs) {
+        [self hideNotificationRequest:req];
+    }
+}
+
+-(void)showNotificationRequestsForBundleIdentifier:(NSString *)bundleIdentifier {
+    [self showNotificationRequests:[self requestsForBundleIdentifier:bundleIdentifier]];
+}
+
+-(void)hideAllNotificationRequests {
+    [self hideNotificationRequests:[self.clvc allNotificationRequests]];
+}
+
+-(void)revealNotificationHistory:(BOOL)revealed {
+    [self.clvc setDidPlayRevealHaptic:YES];
+    [self.clvc forceNotificationHistoryRevealed:revealed animated:NO];
+    [self.clvc setNotificationHistorySectionNeedsReload:YES];
+    [self.clvc _reloadNotificationHistorySectionIfNecessary];
+    if (!revealed && [self.clvc respondsToSelector:@selector(clearAllCoalescingControlsCells)]) [self.clvc clearAllCoalescingControlsCells];
 }
 
 @end

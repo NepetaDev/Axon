@@ -6,9 +6,6 @@
 @property (nonatomic, retain) UICollectionView *collectionView;
 @property (nonatomic, retain) UICollectionViewFlowLayout *collectionViewLayout;
 @property (nonatomic, retain) NSString *selectedBundleIdentifier;
-@property (nonatomic, weak) NCNotificationCombinedListViewController *clvc;
-@property (nonatomic, weak) SBDashBoardCombinedListViewController *sbclvc;
-@property (nonatomic, weak) NCNotificationDispatcher *dispatcher;
 
 @property (nonatomic, assign) BOOL hapticFeedback;
 @property (nonatomic, assign) BOOL badgesEnabled;

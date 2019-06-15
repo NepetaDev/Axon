@@ -12,6 +12,10 @@
 @property (nonatomic, retain) UIColor *fallbackColor;
 @property (nonatomic, weak) NCNotificationRequest *latestRequest;
 @property (nonatomic, weak) AXNView *view;
+@property (nonatomic, weak) NCNotificationCombinedListViewController *clvc;
+@property (nonatomic, weak) SBDashBoardCombinedListViewController *sbclvc;
+@property (nonatomic, weak) NCNotificationDispatcher *dispatcher;
+
 +(instancetype)sharedInstance;
 -(id)init;
 -(void)insertNotificationRequest:(id)req;
@@ -19,4 +23,15 @@
 -(void)modifyNotificationRequest:(id)req;
 -(UIImage *)getIcon:(NSString *)bundleIdentifier;
 -(void)clearAll:(NSString *)bundleIdentifier;
+
+-(void)showNotificationRequest:(id)req;
+-(void)hideNotificationRequest:(id)req;
+
+-(void)showNotificationRequests:(id)reqs;
+-(void)hideNotificationRequests:(id)reqs;
+
+-(void)showNotificationRequestsForBundleIdentifier:(NSString *)bundleIdentifier;
+-(void)hideAllNotificationRequests;
+-(void)revealNotificationHistory:(BOOL)revealed;
+
 @end
