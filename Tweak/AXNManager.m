@@ -159,10 +159,11 @@
 
     [self getRidOfWaste];
     if (self.notificationRequests[bundleIdentifier]) {
-        for (int i = [self.notificationRequests[bundleIdentifier] count]; i >= 0; i--) {
-            __weak AXNRequestWrapper *wrapped = self.notificationRequests[bundleIdentifier][i];
+        __weak NSMutableArray *requests = self.notificationRequests[bundleIdentifier];
+        for (int i = [requests count] - 1; i >= 0; i--) {
+            __weak AXNRequestWrapper *wrapped = requests[i];
             if (wrapped && [[req notificationIdentifier] isEqualToString:[wrapped notificationIdentifier]]) {
-                [self.notificationRequests[bundleIdentifier] removeObjectAtIndex:i];
+                [requests removeObjectAtIndex:i];
             }
         }
     }
@@ -179,11 +180,12 @@
 
     [self getRidOfWaste];
     if (self.notificationRequests[bundleIdentifier]) {
-        for (int i = [self.notificationRequests[bundleIdentifier] count]; i >= 0; i--) {
-            __weak AXNRequestWrapper *wrapped = self.notificationRequests[bundleIdentifier][i];
+        __weak NSMutableArray *requests = self.notificationRequests[bundleIdentifier];
+        for (int i = [requests count] - 1; i >= 0; i--) {
+            __weak AXNRequestWrapper *wrapped = requests[i];
             if (wrapped && [wrapped notificationIdentifier] && [[req notificationIdentifier] isEqualToString:[wrapped notificationIdentifier]]) {
-                [self.notificationRequests[bundleIdentifier] removeObjectAtIndex:i];
-                [self.notificationRequests[bundleIdentifier] insertObject:[AXNRequestWrapper wrapRequest:req] atIndex:i];
+                [requests removeObjectAtIndex:i];
+                [requests insertObject:[AXNRequestWrapper wrapRequest:req] atIndex:i];
                 return;
             }
         }

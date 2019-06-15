@@ -187,9 +187,11 @@
     }
 
     for (NSString *key in sortedKeys) {
+        NSInteger count = [[AXNManager sharedInstance] countForBundleIdentifier:key];
+        if (count == 0) continue;
         [self.list addObject:@{
             @"bundleIdentifier": key,
-            @"notificationCount": @([[AXNManager sharedInstance] countForBundleIdentifier:key])
+            @"notificationCount": @(count)
         }];
     }
 
