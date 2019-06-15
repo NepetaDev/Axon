@@ -147,6 +147,8 @@
         self.notificationRequests[bundleIdentifier] = [NSMutableArray new];
         [self.notificationRequests[bundleIdentifier] addObject:[AXNRequestWrapper wrapRequest:req]];
     }
+
+    [self updateCountForBundleIdentifier:bundleIdentifier];
 }
 
 -(void)removeNotificationRequest:(NCNotificationRequest *)req {
@@ -167,6 +169,8 @@
             }
         }
     }
+    
+    [self updateCountForBundleIdentifier:bundleIdentifier];
 }
 
 -(void)modifyNotificationRequest:(NCNotificationRequest *)req {
@@ -202,6 +206,8 @@
 -(NSArray *)requestsForBundleIdentifier:(NSString *)bundleIdentifier {
     NSMutableArray *array = [NSMutableArray new];
     if (!self.notificationRequests[bundleIdentifier]) return array;
+
+    [self getRidOfWaste];
 
     for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
         __weak AXNRequestWrapper *wrapped = self.notificationRequests[bundleIdentifier][i];

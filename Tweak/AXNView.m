@@ -157,7 +157,6 @@
 }
 
 - (void)refresh {
-    [[AXNManager sharedInstance] invalidateCountCache];
     [self.list removeAllObjects];
     NSArray *sortedKeys = @[];
 
