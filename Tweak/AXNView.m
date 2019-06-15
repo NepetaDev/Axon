@@ -105,12 +105,12 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     AXNAppCell *cell = (AXNAppCell *)[collectionView cellForItemAtIndexPath:indexPath];
+
+    if (![self.selectedBundleIdentifier isEqualToString:cell.bundleIdentifier]) {
+        [[AXNManager sharedInstance] hideAllNotificationRequests];
+    }
     self.selectedBundleIdentifier = cell.bundleIdentifier;
 
-    if (self.showingLatestRequest && [AXNManager sharedInstance].latestRequest) {
-        [[AXNManager sharedInstance] hideNotificationRequest:[AXNManager sharedInstance].latestRequest];
-    }
-    
     [[AXNManager sharedInstance] showNotificationRequestsForBundleIdentifier:cell.bundleIdentifier];
     self.showingLatestRequest = NO;
 
