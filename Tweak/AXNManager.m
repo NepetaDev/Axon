@@ -14,6 +14,7 @@
         sharedInstance.iconStore = [NSMutableDictionary new];
         sharedInstance.backgroundColorCache = [NSMutableDictionary new];
         sharedInstance.textColorCache = [NSMutableDictionary new];
+        sharedInstance.countCache = [NSMutableDictionary new];
         sharedInstance.fallbackColor = [UIColor whiteColor];
     });
     return sharedInstance;
@@ -21,6 +22,42 @@
 
 -(id)init {
     return [AXNManager sharedInstance];
+}
+
+-(void)invalidateCountCache {
+    [self.countCache removeAllObjects];
+}
+
+-(void)updateCountForBundleIdentifier:(NSString *)bundleIdentifier {
+    NSArray *requests = [self requestsForBundleIdentifier:bundleIdentifier];
+    NSInteger count = [requests count];
+    if (count == 0) return;
+
+    if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+        count = 0;
+        NSMutableArray *coalescedNotifications = [NSMutableArray new];
+        for (NCNotificationRequest *req in requests) {
+            NCCoalescedNotification *coalesced = [self coalescedNotificationForRequest:req];
+            if (!coalesced) {
+                count++;
+                continue;
+            }
+            
+            if (![coalescedNotifications containsObject:coalesced]) count += [coalesced.notificationRequests count];
+            [coalescedNotifications addObject:coalesced];
+        }
+    }
+
+    self.countCache[bundleIdentifier] = @(count);
+}
+
+-(NSInteger)countForBundleIdentifier:(NSString *)bundleIdentifier {
+    if (self.countCache[bundleIdentifier]) return [self.countCache[bundleIdentifier] intValue];
+
+    [self updateCountForBundleIdentifier:bundleIdentifier];
+
+    if (self.countCache[bundleIdentifier]) return [self.countCache[bundleIdentifier] intValue];
+    else return 0;
 }
 
 -(UIImage *)getIcon:(NSString *)bundleIdentifier {
@@ -31,8 +68,9 @@
     UIImage *image = [icon getIconImage:2];
 
     if (!image) {
-        for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
-            NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
+        NSArray *requests = [self requestsForBundleIdentifier:bundleIdentifier];
+        for (int i = 0; i < [requests count]; i++) {
+            NCNotificationRequest *request = requests[i];
             if ([request.sectionIdentifier isEqualToString:bundleIdentifier] && request.content && request.content.icon) {
                 image = request.content.icon;
                 break;
@@ -58,7 +96,7 @@
 
 -(void)clearAll:(NSString *)bundleIdentifier {
     if (self.notificationRequests[bundleIdentifier]) {
-        [self.dispatcher destination:nil requestsClearingNotificationRequests:self.notificationRequests[bundleIdentifier]];
+        [self.dispatcher destination:nil requestsClearingNotificationRequests:[self requestsForBundleIdentifier:bundleIdentifier]];
     }
 }
 

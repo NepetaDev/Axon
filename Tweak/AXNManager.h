@@ -9,6 +9,7 @@
 @property (nonatomic, retain) NSMutableDictionary *iconStore;
 @property (nonatomic, retain) NSMutableDictionary *backgroundColorCache;
 @property (nonatomic, retain) NSMutableDictionary *textColorCache;
+@property (nonatomic, retain) NSMutableDictionary *countCache;
 @property (nonatomic, retain) UIColor *fallbackColor;
 @property (nonatomic, weak) NCNotificationRequest *latestRequest;
 @property (nonatomic, weak) AXNView *view;
@@ -30,8 +31,12 @@
 -(void)showNotificationRequests:(id)reqs;
 -(void)hideNotificationRequests:(id)reqs;
 
+-(id)requestsForBundleIdentifier:(NSString *)bundleIdentifier;
 -(void)showNotificationRequestsForBundleIdentifier:(NSString *)bundleIdentifier;
 -(void)hideAllNotificationRequests;
 -(void)revealNotificationHistory:(BOOL)revealed;
+
+-(void)invalidateCountCache;
+-(NSInteger)countForBundleIdentifier:(NSString *)bundleIdentifier;
 
 @end

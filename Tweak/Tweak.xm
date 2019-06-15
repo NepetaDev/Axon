@@ -230,7 +230,7 @@ NSInteger showByDefault;
 -(id)axnNotificationRequests {
     NSMutableOrderedSet *allRequests = [NSMutableOrderedSet new];
     for (NSString *key in [[AXNManager sharedInstance].notificationRequests allKeys]) {
-        [allRequests addObjectsFromArray:[AXNManager sharedInstance].notificationRequests[key]];
+        [allRequests addObjectsFromArray:[[AXNManager sharedInstance] requestsForBundleIdentifier:key]];
     }
     return allRequests;
 }

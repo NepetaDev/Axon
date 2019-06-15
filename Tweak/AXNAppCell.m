@@ -117,12 +117,13 @@
             self.badgeLabel.backgroundColor = [[AXNManager sharedInstance].backgroundColorCache[value] copy];
             self.badgeLabel.textColor = [[AXNManager sharedInstance].textColorCache[value] copy];
         } else {
+            __weak AXNAppCell *weakSelf = self;
             MPArtworkColorAnalyzer *colorAnalyzer = [[MPArtworkColorAnalyzer alloc] initWithImage:self.iconView.image algorithm:0];
             [colorAnalyzer analyzeWithCompletionHandler:^(MPArtworkColorAnalyzer *analyzer, MPArtworkColorAnalysis *analysis) {
                 [AXNManager sharedInstance].backgroundColorCache[value] = [analysis.backgroundColor copy];
                 [AXNManager sharedInstance].textColorCache[value] = [analysis.primaryTextColor copy];
-                self.badgeLabel.backgroundColor = [analysis.backgroundColor copy];
-                self.badgeLabel.textColor = [analysis.primaryTextColor copy];
+                [weakSelf badgeLabel].backgroundColor = [analysis.backgroundColor copy];
+                [weakSelf badgeLabel].textColor = [analysis.primaryTextColor copy];
             }];
         }
     }

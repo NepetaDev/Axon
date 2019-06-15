@@ -157,14 +157,15 @@
 }
 
 - (void)refresh {
+    [[AXNManager sharedInstance] invalidateCountCache];
     [self.list removeAllObjects];
     NSArray *sortedKeys = @[];
 
     switch (self.sortingMode) {
         case 1:
             sortedKeys = [[[AXNManager sharedInstance].notificationRequests allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-                NSInteger first = [[AXNManager sharedInstance].notificationRequests[a] count];
-                NSInteger second = [[AXNManager sharedInstance].notificationRequests[b] count];
+                NSInteger first = [[AXNManager sharedInstance] countForBundleIdentifier:a];
+                NSInteger second = [[AXNManager sharedInstance] countForBundleIdentifier:b];
                 if (first < second) return (NSComparisonResult)NSOrderedDescending;
                 if (first > second) return (NSComparisonResult)NSOrderedAscending;
                 return (NSComparisonResult)NSOrderedSame;
@@ -186,27 +187,9 @@
     }
 
     for (NSString *key in sortedKeys) {
-        NSInteger count = [[AXNManager sharedInstance].notificationRequests[key] count];
-        if (count == 0) continue;
-
-        if ([[AXNManager sharedInstance].dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
-            count = 0;
-            NSMutableArray *coalescedNotifications = [NSMutableArray new];
-            for (NCNotificationRequest *req in [AXNManager sharedInstance].notificationRequests[key]) {
-                NCCoalescedNotification *coalesced = [[AXNManager sharedInstance].dispatcher.notificationStore coalescedNotificationForRequest:req];
-                if (!coalesced) {
-                    count++;
-                    continue;
-                }
-                
-                if (![coalescedNotifications containsObject:coalesced]) count += [coalesced.notificationRequests count];
-                [coalescedNotifications addObject:coalesced];
-            }
-        }
-
         [self.list addObject:@{
             @"bundleIdentifier": key,
-            @"notificationCount": @(count)
+            @"notificationCount": @([[AXNManager sharedInstance] countForBundleIdentifier:key])
         }];
     }
 
