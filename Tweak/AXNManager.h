@@ -19,6 +19,7 @@
 
 +(instancetype)sharedInstance;
 -(id)init;
+-(void)getRidOfWaste;
 -(void)insertNotificationRequest:(id)req;
 -(void)removeNotificationRequest:(id)req;
 -(void)modifyNotificationRequest:(id)req;

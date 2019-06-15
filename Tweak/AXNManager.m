@@ -1,4 +1,5 @@
 #import "AXNManager.h"
+#import "AXNRequestWrapper.h"
 #import "Tweak.h"
 
 @implementation AXNManager
@@ -22,6 +23,16 @@
 
 -(id)init {
     return [AXNManager sharedInstance];
+}
+
+-(void)getRidOfWaste {
+    for (NSString *bundleIdentifier in [self.notificationRequests allKeys]) {
+        __weak NSMutableArray *requests = self.notificationRequests[bundleIdentifier];
+        for (int i = [requests count] - 1; i >= 0; i--) {
+            __weak AXNRequestWrapper *wrapped = requests[i];
+            if (!wrapped || ![wrapped request]) [requests removeObjectAtIndex:i];
+        }
+    }
 }
 
 -(void)invalidateCountCache {
@@ -118,20 +129,21 @@
         }
     }
 
+    [self getRidOfWaste];
     if (self.notificationRequests[bundleIdentifier]) {
         BOOL found = NO;
         for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
-            NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
-            if (request && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
+            __weak AXNRequestWrapper *wrapped = self.notificationRequests[bundleIdentifier][i];
+            if (wrapped && [[req notificationIdentifier] isEqualToString:[wrapped notificationIdentifier]]) {
                 found = YES;
                 break;
             }
         }
 
-        if (!found) [self.notificationRequests[bundleIdentifier] addObject:req];
+        if (!found) [self.notificationRequests[bundleIdentifier] addObject:[AXNRequestWrapper wrapRequest:req]];
     } else {
         self.notificationRequests[bundleIdentifier] = [NSMutableArray new];
-        [self.notificationRequests[bundleIdentifier] addObject:req];
+        [self.notificationRequests[bundleIdentifier] addObject:[AXNRequestWrapper wrapRequest:req]];
     }
 }
 
@@ -143,11 +155,12 @@
         self.latestRequest = nil;
     }
 
+    [self getRidOfWaste];
     if (self.notificationRequests[bundleIdentifier]) {
-        for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
-            NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
-            if (request && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
-                [self.notificationRequests[bundleIdentifier] removeObject:request];
+        for (int i = [self.notificationRequests[bundleIdentifier] count]; i >= 0; i--) {
+            __weak AXNRequestWrapper *wrapped = self.notificationRequests[bundleIdentifier][i];
+            if (wrapped && [[req notificationIdentifier] isEqualToString:[wrapped notificationIdentifier]]) {
+                [self.notificationRequests[bundleIdentifier] removeObjectAtIndex:i];
             }
         }
     }
@@ -162,12 +175,13 @@
         self.latestRequest = req;
     }
 
+    [self getRidOfWaste];
     if (self.notificationRequests[bundleIdentifier]) {
-        for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
-            NCNotificationRequest *request = self.notificationRequests[bundleIdentifier][i];
-            if (request && [request notificationIdentifier] && [[req notificationIdentifier] isEqualToString:[request notificationIdentifier]]) {
+        for (int i = [self.notificationRequests[bundleIdentifier] count]; i >= 0; i--) {
+            __weak AXNRequestWrapper *wrapped = self.notificationRequests[bundleIdentifier][i];
+            if (wrapped && [wrapped notificationIdentifier] && [[req notificationIdentifier] isEqualToString:[wrapped notificationIdentifier]]) {
                 [self.notificationRequests[bundleIdentifier] removeObjectAtIndex:i];
-                [self.notificationRequests[bundleIdentifier] insertObject:req atIndex:i];
+                [self.notificationRequests[bundleIdentifier] insertObject:[AXNRequestWrapper wrapRequest:req] atIndex:i];
                 return;
             }
         }
@@ -182,8 +196,16 @@
     }
 }
 
--(id)requestsForBundleIdentifier:(NSString *)bundleIdentifier {
-    return self.notificationRequests[bundleIdentifier];
+-(NSArray *)requestsForBundleIdentifier:(NSString *)bundleIdentifier {
+    NSMutableArray *array = [NSMutableArray new];
+    if (!self.notificationRequests[bundleIdentifier]) return array;
+
+    for (int i = 0; i < [self.notificationRequests[bundleIdentifier] count]; i++) {
+        __weak AXNRequestWrapper *wrapped = self.notificationRequests[bundleIdentifier][i];
+        if (wrapped && [wrapped request]) [array addObject:[wrapped request]];
+    }
+
+    return array;
 }
 
 -(id)coalescedNotificationForRequest:(id)req {
