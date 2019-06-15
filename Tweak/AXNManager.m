@@ -54,8 +54,10 @@
                 continue;
             }
             
-            if (![coalescedNotifications containsObject:coalesced]) count += [coalesced.notificationRequests count];
-            [coalescedNotifications addObject:coalesced];
+            if (![coalescedNotifications containsObject:coalesced]) {
+                count += [coalesced.notificationRequests count];
+                [coalescedNotifications addObject:coalesced];
+            }
         }
     }
 
