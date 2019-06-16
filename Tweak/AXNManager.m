@@ -222,10 +222,11 @@
 
 -(NSArray *)allRequestsForBundleIdentifier:(NSString *)bundleIdentifier {
     NSArray *requests = [self requestsForBundleIdentifier:bundleIdentifier];
-    NSMutableArray *allRequests = [NSMutableArray new];
 
     if ([self.dispatcher.notificationStore respondsToSelector:@selector(coalescedNotificationForRequest:)]) {
+        NSMutableArray *allRequests = [NSMutableArray new];
         NSMutableArray *coalescedNotifications = [NSMutableArray new];
+        
         for (NCNotificationRequest *req in requests) {
             NCCoalescedNotification *coalesced = [self coalescedNotificationForRequest:req];
             if (!coalesced) {
