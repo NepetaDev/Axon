@@ -36,6 +36,12 @@
     return self;
 }
 
+- (void)setSpacing:(CGFloat)spacing {
+    _spacing = spacing;
+    self.collectionViewLayout.minimumLineSpacing = spacing;
+    self.collectionViewLayout.minimumInteritemSpacing = spacing;
+}
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if (section == 0) return [self.list count];
     else return 0;

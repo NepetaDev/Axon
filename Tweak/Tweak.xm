@@ -12,6 +12,21 @@ NSInteger sortingMode;
 NSInteger selectionStyle;
 NSInteger style;
 NSInteger showByDefault;
+CGFloat spacing;
+
+void updateViewConfiguration() {
+    if (initialized && [AXNManager sharedInstance].view) {
+        [AXNManager sharedInstance].view.hapticFeedback = hapticFeedback;
+        [AXNManager sharedInstance].view.badgesEnabled = badgesEnabled;
+        [AXNManager sharedInstance].view.badgesShowBackground = badgesShowBackground;
+        [AXNManager sharedInstance].view.selectionStyle = selectionStyle;
+        [AXNManager sharedInstance].view.sortingMode = sortingMode;
+        [AXNManager sharedInstance].view.style = style;
+        [AXNManager sharedInstance].view.darkMode = darkMode;
+        [AXNManager sharedInstance].view.showByDefault = showByDefault;
+        [AXNManager sharedInstance].view.spacing = spacing;
+    }
+}
 
 %group Axon
 
@@ -67,15 +82,8 @@ NSInteger showByDefault;
         UIStackView *stackView = [self valueForKey:@"_stackView"];
         self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(0,0,64,90)];
         self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.axnView.hapticFeedback = hapticFeedback;
-        self.axnView.badgesEnabled = badgesEnabled;
-        self.axnView.badgesShowBackground = badgesShowBackground;
-        self.axnView.selectionStyle = selectionStyle;
-        self.axnView.style = style;
-        self.axnView.sortingMode = sortingMode;
-        self.axnView.darkMode = darkMode;
-        self.axnView.showByDefault = showByDefault;
         [AXNManager sharedInstance].view = self.axnView;
+        updateViewConfiguration();
 
         [stackView addArrangedSubview:self.axnView];
 
@@ -352,17 +360,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     [preferences registerInteger:&selectionStyle default:0 forKey:@"SelectionStyle"];
     [preferences registerInteger:&style default:0 forKey:@"Style"];
     [preferences registerInteger:&showByDefault default:0 forKey:@"ShowByDefault"];
+    [preferences registerFloat:&spacing default:10.0 forKey:@"Spacing"];
     [preferences registerPreferenceChangeBlock:^() {
-        if (initialized && [AXNManager sharedInstance].view) {
-            [AXNManager sharedInstance].view.hapticFeedback = hapticFeedback;
-            [AXNManager sharedInstance].view.badgesEnabled = badgesEnabled;
-            [AXNManager sharedInstance].view.badgesShowBackground = badgesShowBackground;
-            [AXNManager sharedInstance].view.selectionStyle = selectionStyle;
-            [AXNManager sharedInstance].view.sortingMode = sortingMode;
-            [AXNManager sharedInstance].view.style = style;
-            [AXNManager sharedInstance].view.darkMode = darkMode;
-            [AXNManager sharedInstance].view.showByDefault = showByDefault;
-        }
+        updateViewConfiguration();
     }];
 
     if (!dpkgInvalid && enabled) {
