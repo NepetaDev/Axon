@@ -61,8 +61,8 @@
         [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
         [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
         [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
-        [self.badgeLabel.heightAnchor constraintEqualToConstant:20],
-        [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
+        [self.badgeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:10],
+        [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-10],
     ];
 
     _styleConstraintsTiny = @[
@@ -72,8 +72,8 @@
         [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-25],
         [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
         [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
-        [self.badgeLabel.heightAnchor constraintEqualToConstant:20],
-        [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
+        [self.badgeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
+        [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
     ];
 
     return self;
