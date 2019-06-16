@@ -48,8 +48,9 @@
     _alignment = alignment;
     if (_alignment > 2 || _alignment < 0) _alignment = 1;
 
-    self.collectionView.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
-    if (alignment == 2) self.collectionView.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
+    self.collectionView.semanticContentAttribute = UISemanticContentAttributeUnspecified;
+    if (alignment == 0) self.collectionView.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+    else if (alignment == 2) self.collectionView.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
 
     [self.collectionView setNeedsLayout];
     [self.collectionView layoutIfNeeded];
