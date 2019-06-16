@@ -12,6 +12,7 @@ NSInteger sortingMode;
 NSInteger selectionStyle;
 NSInteger style;
 NSInteger showByDefault;
+NSInteger alignment;
 CGFloat spacing;
 
 void updateViewConfiguration() {
@@ -25,6 +26,7 @@ void updateViewConfiguration() {
         [AXNManager sharedInstance].view.darkMode = darkMode;
         [AXNManager sharedInstance].view.showByDefault = showByDefault;
         [AXNManager sharedInstance].view.spacing = spacing;
+        [AXNManager sharedInstance].view.alignment = alignment;
     }
 }
 
@@ -360,6 +362,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     [preferences registerInteger:&selectionStyle default:0 forKey:@"SelectionStyle"];
     [preferences registerInteger:&style default:0 forKey:@"Style"];
     [preferences registerInteger:&showByDefault default:0 forKey:@"ShowByDefault"];
+    [preferences registerInteger:&alignment default:1 forKey:@"Alignment"];
     [preferences registerFloat:&spacing default:10.0 forKey:@"Spacing"];
     [preferences registerPreferenceChangeBlock:^() {
         updateViewConfiguration();

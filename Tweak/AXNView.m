@@ -42,6 +42,19 @@
     self.collectionViewLayout.minimumInteritemSpacing = spacing;
 }
 
+- (void)setAlignment:(NSInteger)alignment {
+    if (alignment == _alignment) return;
+    
+    _alignment = alignment;
+    if (_alignment > 2 || _alignment < 0) _alignment = 1;
+
+    self.collectionView.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+    if (alignment == 2) self.collectionView.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
+
+    [self.collectionView setNeedsLayout];
+    [self.collectionView layoutIfNeeded];
+}
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if (section == 0) return [self.list count];
     else return 0;
@@ -141,6 +154,8 @@
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    if (self.alignment != 1) return UIEdgeInsetsMake(0, 0, 0, 0);
+
     CGFloat spacing = [(UICollectionViewFlowLayout *)collectionViewLayout minimumLineSpacing];
     CGFloat width = 64;
 

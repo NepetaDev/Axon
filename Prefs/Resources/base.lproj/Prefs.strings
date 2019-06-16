@@ -30,6 +30,11 @@
 
   "SPACING" = "Spacing";
 
+  "ALIGNMENT" = "Alignment";
+  "LEFT" = "Left";
+  "CENTER" = "Center";
+  "RIGHT" = "Right";
+
   "CREDITS_1" = "Ahmed Bousrih";
   "CREDITS_1_INFO" = "Designed the icon and banners.";
 
