@@ -1,8 +1,5 @@
 @interface AXNAppCell : UICollectionViewCell {
-    NSArray *_styleConstraintsDefault;
-    NSArray *_styleConstraintsPacked;
-    NSArray *_styleConstraintsCompact;
-    NSArray *_styleConstraintsTiny;
+    NSArray *_styleConstraints;
 }
 
 @property (nonatomic, retain) UIImageView *iconView;

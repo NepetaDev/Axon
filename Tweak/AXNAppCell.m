@@ -8,6 +8,7 @@
 
 -(id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
+    _style = -1;
 
     UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showMenu:)];
     [self addGestureRecognizer:recognizer];
@@ -32,48 +33,47 @@
     self.badgeLabel.textAlignment = NSTextAlignmentCenter;
     [self addSubview:self.badgeLabel];
 
-    _styleConstraintsDefault = @[
-        [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5],
-        [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:10],
-        [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-10],
-        [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-30],
-        [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-        [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-10],
-        [self.badgeLabel.heightAnchor constraintEqualToConstant:20],
-        [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
-    ];
-
-    _styleConstraintsPacked = @[
-        [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:10],
-        [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:10],
-        [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-10],
-        [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-10],
-        [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
-        [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
-        [self.badgeLabel.heightAnchor constraintEqualToConstant:20],
-        [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
-    ];
-
-    _styleConstraintsCompact = @[
-        [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5],
-        [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
-        [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
-        [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
-        [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-        [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
-        [self.badgeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:10],
-        [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-10],
-    ];
-
-    _styleConstraintsTiny = @[
-        [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5],
-        [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
-        [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
-        [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-25],
-        [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-        [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
-        [self.badgeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
-        [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
+    _styleConstraints = @[
+        @[  // default
+            [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5],
+            [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:10],
+            [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-10],
+            [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-30],
+            [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+            [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-10],
+            [self.badgeLabel.heightAnchor constraintEqualToConstant:20],
+            [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
+        ],
+        @[  // packed
+            [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:10],
+            [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:10],
+            [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-10],
+            [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-10],
+            [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
+            [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
+            [self.badgeLabel.heightAnchor constraintEqualToConstant:20],
+            [self.badgeLabel.widthAnchor constraintEqualToConstant:30],
+        ],
+        @[  // compact
+            [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5],
+            [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
+            [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
+            [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
+            [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+            [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
+            [self.badgeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:10],
+            [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-10],
+        ],
+        @[  // tiny
+            [self.iconView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5],
+            [self.iconView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
+            [self.iconView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
+            [self.iconView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-25],
+            [self.badgeLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+            [self.badgeLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-5],
+            [self.badgeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:5],
+            [self.badgeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-5],
+        ]
     ];
 
     return self;
@@ -148,26 +148,14 @@
 }
 
 -(void)setStyle:(NSInteger)style {
-    _style = style;
-    [NSLayoutConstraint deactivateConstraints:_styleConstraintsDefault];
-    [NSLayoutConstraint deactivateConstraints:_styleConstraintsPacked];
-    [NSLayoutConstraint deactivateConstraints:_styleConstraintsCompact];
-    [NSLayoutConstraint deactivateConstraints:_styleConstraintsTiny];
+    if (_style == style) return;
+    NSInteger oldStyle = _style;
 
-    switch (style) {
-        case 1:
-            [NSLayoutConstraint activateConstraints:_styleConstraintsPacked];
-            break;
-        case 2:
-            [NSLayoutConstraint activateConstraints:_styleConstraintsCompact];
-            break;
-        case 3:
-            [NSLayoutConstraint activateConstraints:_styleConstraintsTiny];
-            break;
-        default:
-            [NSLayoutConstraint activateConstraints:_styleConstraintsDefault];
-    }
+    if (style >= [_styleConstraints count] || style < 0) _style = 0;
+    else _style = style;
 
+    if (oldStyle != -1) [NSLayoutConstraint deactivateConstraints:_styleConstraints[oldStyle]];
+    [NSLayoutConstraint activateConstraints:_styleConstraints[_style]];
     [self setNeedsLayout];
 }
 
