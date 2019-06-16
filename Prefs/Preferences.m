@@ -15,6 +15,33 @@
                                     action:@selector(respring:)];
         self.respringButton.tintColor = [UIColor whiteColor];
         self.navigationItem.rightBarButtonItem = self.respringButton;
+
+        self.navigationItem.titleView = [UIView new];
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,0,10,10)];
+        self.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+        self.titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.titleLabel.text = @"Axon";
+        self.titleLabel.textColor = [UIColor whiteColor];
+        self.titleLabel.textAlignment = NSTextAlignmentCenter;
+        [self.navigationItem.titleView addSubview:self.titleLabel];
+
+        self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,10,10)];
+        self.iconView.contentMode = UIViewContentModeScaleAspectFit;
+        self.iconView.image = [UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/AxonPrefs.bundle/icon@2x.png"];
+        self.iconView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.iconView.alpha = 0.0;
+        [self.navigationItem.titleView addSubview:self.iconView];
+        
+        [NSLayoutConstraint activateConstraints:@[
+            [self.titleLabel.topAnchor constraintEqualToAnchor:self.navigationItem.titleView.topAnchor],
+            [self.titleLabel.leadingAnchor constraintEqualToAnchor:self.navigationItem.titleView.leadingAnchor],
+            [self.titleLabel.trailingAnchor constraintEqualToAnchor:self.navigationItem.titleView.trailingAnchor],
+            [self.titleLabel.bottomAnchor constraintEqualToAnchor:self.navigationItem.titleView.bottomAnchor],
+            [self.iconView.topAnchor constraintEqualToAnchor:self.navigationItem.titleView.topAnchor],
+            [self.iconView.leadingAnchor constraintEqualToAnchor:self.navigationItem.titleView.leadingAnchor],
+            [self.iconView.trailingAnchor constraintEqualToAnchor:self.navigationItem.titleView.trailingAnchor],
+            [self.iconView.bottomAnchor constraintEqualToAnchor:self.navigationItem.titleView.bottomAnchor],
+        ]];
     }
 
     return self;
@@ -78,6 +105,19 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGFloat offsetY = scrollView.contentOffset.y;
+
+    if (offsetY > 200) {
+        [UIView animateWithDuration:0.2 animations:^{
+            self.iconView.alpha = 1.0;
+            self.titleLabel.alpha = 0.0;
+        }];
+    } else {
+        [UIView animateWithDuration:0.2 animations:^{
+            self.iconView.alpha = 0.0;
+            self.titleLabel.alpha = 1.0;
+        }];
+    }
+    
     if (offsetY > 0) offsetY = 0;
     self.headerImageView.frame = CGRectMake(0, offsetY, self.headerView.frame.size.width, 200 - offsetY);
 }

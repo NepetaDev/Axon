@@ -60,22 +60,17 @@
 			<key>PostNotification</key>
 			<string>me.nepeta.axon/ReloadPrefs</string>
 		</dict>
-
 		<dict>
 			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>STYLE</string>
-			<key>isStaticText</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSegmentCell</string>
+			<string>PSLinkListCell</string>
+			<key>detail</key>
+			<string>AXNListItemsController</string>
 			<key>default</key>
 			<integer>0</integer>
 			<key>defaults</key>
 			<string>me.nepeta.axon</string>
+			<key>label</key>
+			<string>STYLE</string>
 			<key>key</key>
 			<string>Style</string>
 			<key>validValues</key>
@@ -92,8 +87,6 @@
 				<string>COMPACT</string>
 				<string>TINY</string>
 			</array>
-			<key>alignment</key>
-			<string>4</string>
 			<key>PostNotification</key>
 			<string>me.nepeta.axon/ReloadPrefs</string>
 		</dict>
