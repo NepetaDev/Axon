@@ -131,6 +131,10 @@ void updateViewConfiguration() {
     [AXNManager sharedInstance].sbclvc = self;
 }
 
+-(BOOL)hasContent {
+    return YES;
+}
+
 %end
 
 #pragma mark Notification management
