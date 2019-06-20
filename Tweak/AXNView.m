@@ -14,7 +14,7 @@
     self.list = [NSMutableArray new];
 
     self.collectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
-    self.collectionViewLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    self.collectionViewLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:self.collectionViewLayout];
     self.collectionView.showsHorizontalScrollIndicator = NO;

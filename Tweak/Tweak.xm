@@ -76,49 +76,6 @@ void updateViewConfiguration() {
 
 %property (nonatomic, retain) AXNView *axnView;
 
--(void)viewDidLoad {
-    %orig;
-
-    if (!initialized) {
-        initialized = YES;
-        UIStackView *stackView = [self valueForKey:@"_stackView"];
-        self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(0,0,64,90)];
-        self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
-        [AXNManager sharedInstance].view = self.axnView;
-        updateViewConfiguration();
-
-        [stackView addArrangedSubview:self.axnView];
-
-        [NSLayoutConstraint activateConstraints:@[
-            [self.axnView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.axnView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [self.axnView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [self.axnView.heightAnchor constraintEqualToConstant:90]
-        ]];
-    }
-}
-
-/* This is used to make the Axon view last, e.g. when media controls are presented. */
-
--(void)_updatePresentingContent {
-    %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.axnView];
-    [stackView addArrangedSubview:self.axnView];
-}
-
--(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
-    %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.axnView];
-    [stackView addArrangedSubview:self.axnView];
-}
-
-/* Let Springboard know we have a little surprise for it. */
-
--(BOOL)isPresentingContent {
-    return YES;
-}
 
 %end
 
@@ -126,8 +83,26 @@ void updateViewConfiguration() {
 
 %hook SBDashBoardCombinedListViewController
 
+%property (nonatomic, retain) AXNView *axnView;
+
 -(void)viewDidLoad{
     %orig;
+    if (!initialized) {
+        initialized = YES;
+        self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 96, 0, 96, 500)];
+        self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
+        [AXNManager sharedInstance].view = self.axnView;
+        updateViewConfiguration();
+
+        [self.view addSubview:self.axnView];
+
+        [NSLayoutConstraint activateConstraints:@[
+            [self.axnView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
+            [self.axnView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+            [self.axnView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+            [self.axnView.widthAnchor constraintEqualToConstant:90]
+        ]];
+    }
     [AXNManager sharedInstance].sbclvc = self;
 }
 
@@ -138,6 +113,15 @@ void updateViewConfiguration() {
 %hook NCNotificationCombinedListViewController
 
 %property (nonatomic,assign) BOOL axnAllowChanges;
+
+-(UIEdgeInsets)insetMargins {
+    return UIEdgeInsetsMake(0, 0, 0, -96);
+}
+
+-(CGSize)collectionView:(id)arg1 layout:(id)arg2 sizeForItemAtIndexPath:(id)arg3 {
+    CGSize orig = %orig;
+    return CGSizeMake(orig.width - 96, orig.height);
+}
 
 /* Store this object for future use. */
 
