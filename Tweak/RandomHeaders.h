@@ -65,6 +65,7 @@
 -(bool)hasContent;
 -(void)clearAllCoalescingControlsCells;
 -(void)clearAll;
+-(UICollectionView*)collectionView;
 
 @end
 
@@ -149,5 +150,11 @@
 
 +(id)sharedInstance;
 -(void)resetIdleTimer;
+
+@end
+
+@interface UIScrollView(Private)
+
+-(BOOL)_scrollToTopIfPossible:(BOOL)arg1;
 
 @end
