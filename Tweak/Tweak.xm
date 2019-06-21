@@ -251,7 +251,8 @@ void updateViewConfiguration() {
 %property (nonatomic,assign) BOOL axnAllowChanges;
 
 -(UIEdgeInsets)insetMargins {
-    return UIEdgeInsetsMake(0, 0, 0, -96);
+    if (verticalPosition == 0) return UIEdgeInsetsMake(0, -96, 0, 0);
+    else return UIEdgeInsetsMake(0, 0, 0, -96);
 }
 
 -(CGSize)collectionView:(id)arg1 layout:(id)arg2 sizeForItemAtIndexPath:(id)arg3 {
@@ -280,9 +281,18 @@ void updateViewConfiguration() {
         [NSLayoutConstraint activateConstraints:@[
             [self.axnView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
             [self.axnView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
-            [self.axnView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
             [self.axnView.widthAnchor constraintEqualToConstant:90]
         ]];
+
+        if (verticalPosition == 0) {
+            [NSLayoutConstraint activateConstraints:@[
+                [self.axnView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            ]];
+        } else {
+            [NSLayoutConstraint activateConstraints:@[
+                [self.axnView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+            ]];
+        }
     }
     [AXNManager sharedInstance].sbclvc = self;
 }
