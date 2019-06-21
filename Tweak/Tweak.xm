@@ -278,8 +278,8 @@ void updateViewConfiguration() {
         [self.view addSubview:self.axnView];
 
         [NSLayoutConstraint activateConstraints:@[
-            [self.axnView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor],
-            [self.axnView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+            [self.axnView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+            [self.axnView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
             [self.axnView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
             [self.axnView.widthAnchor constraintEqualToConstant:90]
         ]];
