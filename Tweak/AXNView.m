@@ -136,6 +136,10 @@
 
     [[NSClassFromString(@"SBIdleTimerGlobalCoordinator") sharedInstance] resetIdleTimer];
     [[AXNManager sharedInstance] revealNotificationHistory:YES];
+
+    if (self.collectionViewLayout.scrollDirection == UICollectionViewScrollDirectionVertical) {
+        [[[AXNManager sharedInstance].clvc collectionView] _scrollToTopIfPossible:YES];
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {

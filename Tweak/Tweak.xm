@@ -4,6 +4,7 @@
 BOOL dpkgInvalid = NO;
 BOOL initialized = NO;
 BOOL enabled;
+BOOL vertical;
 BOOL badgesEnabled;
 BOOL badgesShowBackground;
 BOOL hapticFeedback;
@@ -13,6 +14,7 @@ NSInteger selectionStyle;
 NSInteger style;
 NSInteger showByDefault;
 NSInteger alignment;
+NSInteger verticalPosition;
 CGFloat spacing;
 
 void updateViewConfiguration() {
@@ -76,60 +78,6 @@ void updateViewConfiguration() {
 
 %property (nonatomic, retain) AXNView *axnView;
 
--(void)viewDidLoad {
-    %orig;
-
-    if (!initialized) {
-        initialized = YES;
-        UIStackView *stackView = [self valueForKey:@"_stackView"];
-        self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(0,0,64,90)];
-        self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
-        [AXNManager sharedInstance].view = self.axnView;
-        updateViewConfiguration();
-
-        [stackView addArrangedSubview:self.axnView];
-
-        [NSLayoutConstraint activateConstraints:@[
-            [self.axnView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
-            [self.axnView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
-            [self.axnView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
-            [self.axnView.heightAnchor constraintEqualToConstant:90]
-        ]];
-    }
-}
-
-/* This is used to make the Axon view last, e.g. when media controls are presented. */
-
--(void)_updatePresentingContent {
-    %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.axnView];
-    [stackView addArrangedSubview:self.axnView];
-}
-
--(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
-    %orig;
-    UIStackView *stackView = [self valueForKey:@"_stackView"];
-    [stackView removeArrangedSubview:self.axnView];
-    [stackView addArrangedSubview:self.axnView];
-}
-
-/* Let Springboard know we have a little surprise for it. */
-
--(BOOL)isPresentingContent {
-    return YES;
-}
-
-%end
-
-#pragma mark Store SBDashBoardCombinedListViewController for future use
-
-%hook SBDashBoardCombinedListViewController
-
--(void)viewDidLoad{
-    %orig;
-    [AXNManager sharedInstance].sbclvc = self;
-}
 
 -(BOOL)hasContent {
     return YES;
@@ -300,6 +248,126 @@ void updateViewConfiguration() {
 
 %end
 
+%group AxonVertical
+
+%hook NCNotificationCombinedListViewController
+
+%property (nonatomic,assign) BOOL axnAllowChanges;
+
+-(UIEdgeInsets)insetMargins {
+    if (verticalPosition == 0) return UIEdgeInsetsMake(0, -96, 0, 0);
+    else return UIEdgeInsetsMake(0, 0, 0, -96);
+}
+
+-(CGSize)collectionView:(id)arg1 layout:(id)arg2 sizeForItemAtIndexPath:(id)arg3 {
+    CGSize orig = %orig;
+    return CGSizeMake(orig.width - 96, orig.height);
+}
+
+%end
+
+%hook SBDashBoardCombinedListViewController
+
+%property (nonatomic, retain) AXNView *axnView;
+
+-(void)viewDidLoad{
+    %orig;
+    if (!initialized) {
+        initialized = YES;
+        self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 96, 0, 96, 500)];
+        self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.axnView.collectionViewLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+        [AXNManager sharedInstance].view = self.axnView;
+        updateViewConfiguration();
+
+        [self.view addSubview:self.axnView];
+
+        [NSLayoutConstraint activateConstraints:@[
+            [self.axnView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+            [self.axnView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+            [self.axnView.widthAnchor constraintEqualToConstant:90]
+        ]];
+
+        if (verticalPosition == 0) {
+            [NSLayoutConstraint activateConstraints:@[
+                [self.axnView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            ]];
+        } else {
+            [NSLayoutConstraint activateConstraints:@[
+                [self.axnView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+            ]];
+        }
+    }
+    [AXNManager sharedInstance].sbclvc = self;
+}
+
+%end
+
+%end
+
+%group AxonHorizontal
+
+%hook SBDashBoardCombinedListViewController
+
+-(void)viewDidLoad{
+    %orig;
+    [AXNManager sharedInstance].sbclvc = self;
+}
+
+%end
+
+%hook SBDashBoardNotificationAdjunctListViewController
+
+%property (nonatomic, retain) AXNView *axnView;
+
+-(void)viewDidLoad {
+    %orig;
+
+    if (!initialized) {
+        initialized = YES;
+        UIStackView *stackView = [self valueForKey:@"_stackView"];
+        self.axnView = [[AXNView alloc] initWithFrame:CGRectMake(0,0,64,90)];
+        self.axnView.translatesAutoresizingMaskIntoConstraints = NO;
+        [AXNManager sharedInstance].view = self.axnView;
+        updateViewConfiguration();
+
+        [stackView addArrangedSubview:self.axnView];
+
+        [NSLayoutConstraint activateConstraints:@[
+            [self.axnView.centerXAnchor constraintEqualToAnchor:stackView.centerXAnchor],
+            [self.axnView.leadingAnchor constraintEqualToAnchor:stackView.leadingAnchor constant:10],
+            [self.axnView.trailingAnchor constraintEqualToAnchor:stackView.trailingAnchor constant:-10],
+            [self.axnView.heightAnchor constraintEqualToConstant:90]
+        ]];
+    }
+}
+
+/* This is used to make the Axon view last, e.g. when media controls are presented. */
+
+-(void)_updatePresentingContent {
+    %orig;
+    UIStackView *stackView = [self valueForKey:@"_stackView"];
+    [stackView removeArrangedSubview:self.axnView];
+    [stackView addArrangedSubview:self.axnView];
+}
+
+-(void)_insertItem:(id)arg1 animated:(BOOL)arg2 {
+    %orig;
+    UIStackView *stackView = [self valueForKey:@"_stackView"];
+    [stackView removeArrangedSubview:self.axnView];
+    [stackView addArrangedSubview:self.axnView];
+}
+
+/* Let Springboard know we have a little surprise for it. */
+
+-(BOOL)isPresentingContent {
+    return YES;
+}
+
+%end
+
+%end
+
 %group AxonIntegrityFail
 
 %hook SBIconController
@@ -358,6 +426,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
     HBPreferences *preferences = [[HBPreferences alloc] initWithIdentifier:@"me.nepeta.axon"];
     [preferences registerBool:&enabled default:YES forKey:@"Enabled"];
+    [preferences registerBool:&vertical default:NO forKey:@"Vertical"];
     [preferences registerBool:&hapticFeedback default:YES forKey:@"HapticFeedback"];
     [preferences registerBool:&badgesEnabled default:YES forKey:@"BadgesEnabled"];
     [preferences registerBool:&badgesShowBackground default:YES forKey:@"BadgesShowBackground"];
@@ -367,6 +436,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     [preferences registerInteger:&style default:0 forKey:@"Style"];
     [preferences registerInteger:&showByDefault default:0 forKey:@"ShowByDefault"];
     [preferences registerInteger:&alignment default:1 forKey:@"Alignment"];
+    [preferences registerInteger:&verticalPosition default:0 forKey:@"VerticalPosition"];
     [preferences registerFloat:&spacing default:10.0 forKey:@"Spacing"];
     [preferences registerPreferenceChangeBlock:^() {
         updateViewConfiguration();
@@ -384,6 +454,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
         if (ok && [@"nepeta" isEqualToString:@"nepeta"]) {
             %init(Axon);
+            if (!vertical) {
+                %init(AxonHorizontal);
+            } else {
+                %init(AxonVertical);
+            }
             CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, displayStatusChanged, CFSTR("com.apple.iokit.hid.displayStatus"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
             return;
         } else {

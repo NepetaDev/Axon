@@ -20,3 +20,10 @@
 -(BOOL)isPresentingContent;
 
 @end
+
+
+@interface SBDashBoardCombinedListViewController (Axon)
+
+@property (nonatomic, retain) AXNView *axnView;
+
+@end
