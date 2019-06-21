@@ -258,7 +258,7 @@ void updateViewConfiguration() {
 /* FastUnlockX */
 
 -(BOOL)hasVisibleContent {
-    if ([AXNManager sharedInstance].sbclvc) return [[AXNManager sharedInstance].sbclvc hasContent];
+    if ([AXNManager sharedInstance].view && [[AXNManager sharedInstance].view.list count] > 0) return YES;
     return %orig;
 }
 
@@ -269,7 +269,7 @@ void updateViewConfiguration() {
 /* The only way I know of... AutoUnlockX */
 
 -(BOOL)externalBlocksUnlock {
-    if ([AXNManager sharedInstance].sbclvc && [[AXNManager sharedInstance].sbclvc hasContent]) return [[AXNManager sharedInstance].sbclvc hasContent];
+    if ([AXNManager sharedInstance].view && [[AXNManager sharedInstance].view.list count] > 0) return YES;
     return %orig;
 }
 
