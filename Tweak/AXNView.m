@@ -163,23 +163,35 @@
 
     CGFloat spacing = [(UICollectionViewFlowLayout *)collectionViewLayout minimumLineSpacing];
     CGFloat width = 64;
+    CGFloat viewWidth = self.bounds.size.width;
 
     if (self.style == 2) width = 48;
-    if (self.style == 3) width = 40;
+    else if (self.style == 3) width = 40;
+
+    if (self.collectionViewLayout.scrollDirection == UICollectionViewScrollDirectionVertical) {
+        width = 90;
+        if (self.style == 1 || self.style == 3) width = 64;
+        else if (self.style == 2) width = 48;
+
+        viewWidth = self.bounds.size.height;
+    }
 
     NSInteger count = [self collectionView:collectionView numberOfItemsInSection:section];
     CGFloat totalCellWidth = width * count;
     CGFloat totalSpacingWidth = spacing * (count - 1);
     if (totalSpacingWidth < 0) totalSpacingWidth = 0;
 
-    CGFloat leftInset = (self.bounds.size.width - (totalCellWidth + totalSpacingWidth)) / 2;
+    CGFloat leftInset = (viewWidth - (totalCellWidth + totalSpacingWidth)) / 2;
     if (leftInset < 0) {
-        UIEdgeInsets inset = [(UICollectionViewFlowLayout *)collectionViewLayout sectionInset];
-        return inset;
+        return [(UICollectionViewFlowLayout *)collectionViewLayout sectionInset];
     }
     CGFloat rightInset = leftInset;
-    UIEdgeInsets sectionInset = UIEdgeInsetsMake(0, leftInset, 0, rightInset);
-    return sectionInset;
+
+    if (self.collectionViewLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
+        return UIEdgeInsetsMake(0, leftInset, 0, rightInset);
+    } else {
+        return UIEdgeInsetsMake(leftInset, 0, rightInset, 0);
+    }
 }
 
 - (void)refresh {
